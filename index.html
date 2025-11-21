@@ -3,663 +3,704 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mamar Coffee</title>
+  <title>Coffee Mama</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
-      overflow: hidden; 
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #000;
-    }
-    #container { 
-      width: 100vw; 
-      height: 100vh; 
-      cursor: grab;
-    }
-    #container:active { cursor: grabbing; }
-    .overlay {
+    body { overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
+    #c { width: 100vw; height: 100vh; display: block; cursor: grab; }
+    #c:active { cursor: grabbing; }
+    .ui {
       position: fixed;
-      top: 20px;
+      top: 25px;
       left: 50%;
       transform: translateX(-50%);
       text-align: center;
       pointer-events: none;
-      z-index: 100;
+      z-index: 10;
     }
-    .overlay h1 {
-      font-size: 32px;
-      color: #00ff88;
-      text-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88, 0 0 40px #00ff88;
-      letter-spacing: 4px;
-      animation: glow 2s ease-in-out infinite;
+    .ui h1 {
+      font-size: 38px;
+      font-weight: 800;
+      color: #00ffa3;
+      text-shadow: 0 0 15px #00ffa3, 0 0 30px #00ffa3, 0 0 60px #00ffa3, 0 0 100px rgba(0,255,163,0.5);
+      letter-spacing: 6px;
+      animation: titleGlow 3s ease-in-out infinite;
     }
-    .overlay p {
-      color: #b388ff;
+    .ui p {
+      color: #e0b0ff;
       font-size: 14px;
-      margin-top: 5px;
-      opacity: 0.8;
+      margin-top: 8px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px #e0b0ff;
     }
-    @keyframes glow {
-      0%, 100% { filter: brightness(1); }
-      50% { filter: brightness(1.2); }
+    @keyframes titleGlow {
+      0%, 100% { filter: brightness(1) drop-shadow(0 0 20px #00ffa3); }
+      50% { filter: brightness(1.3) drop-shadow(0 0 40px #00ffa3); }
     }
-    .instructions {
+    .hint {
       position: fixed;
-      bottom: 20px;
+      bottom: 25px;
       left: 50%;
       transform: translateX(-50%);
-      color: rgba(255,255,255,0.5);
+      color: rgba(255,255,255,0.4);
       font-size: 13px;
       pointer-events: none;
-      z-index: 100;
-    }
-    .loading {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: #00ff88;
-      font-size: 18px;
-      z-index: 200;
+      z-index: 10;
     }
   </style>
 </head>
 <body>
-  <div class="overlay">
-    <h1>MAMAR COFFEE</h1>
-    <p>☕ Premium Brews Since 2024</p>
+  <div class="ui">
+    <h1>COFFEE MAMA</h1>
+    <p>☕ Crafted for coffee Lovers</p>
   </div>
-  <div class="instructions">Drag to rotate • Scroll to zoom</div>
-  <div id="container"></div>
-  <div class="loading" id="loading">Loading...</div>
+  <div class="hint">Drag to explore • Scroll to zoom</div>
+  <canvas id="c"></canvas>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
-    const container = document.getElementById('container');
-    const loading = document.getElementById('loading');
-    
-    // Scene setup
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0a1a);
-    scene.fog = new THREE.FogExp2(0x0a0a1a, 0.035);
-    
-    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(10, 8, 12);
-    
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const canvas = document.getElementById('c');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
-    container.appendChild(renderer.domElement);
+    renderer.toneMappingExposure = 1.1;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x050510);
+    scene.fog = new THREE.FogExp2(0x050510, 0.025);
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 500);
     
     // Lights
-    const ambientLight = new THREE.AmbientLight(0x6b4a8b, 0.4);
-    scene.add(ambientLight);
-    
-    const mainLight = new THREE.PointLight(0xffeedd, 1.5, 25);
-    mainLight.position.set(0, 8, 0);
+    const ambient = new THREE.AmbientLight(0x6040a0, 0.5);
+    scene.add(ambient);
+
+    const mainLight = new THREE.DirectionalLight(0xffeedd, 0.8);
+    mainLight.position.set(5, 10, 5);
     mainLight.castShadow = true;
-    mainLight.shadow.mapSize.width = 1024;
-    mainLight.shadow.mapSize.height = 1024;
+    mainLight.shadow.mapSize.width = 2048;
+    mainLight.shadow.mapSize.height = 2048;
+    mainLight.shadow.camera.near = 0.5;
+    mainLight.shadow.camera.far = 50;
+    mainLight.shadow.camera.left = -15;
+    mainLight.shadow.camera.right = 15;
+    mainLight.shadow.camera.top = 15;
+    mainLight.shadow.camera.bottom = -15;
+    mainLight.shadow.bias = -0.0001;
     scene.add(mainLight);
-    
-    const pinkLight = new THREE.PointLight(0xff1493, 1.2, 18);
-    pinkLight.position.set(-6, 4, 4);
+
+    const pinkLight = new THREE.PointLight(0xff1493, 1.5, 20);
+    pinkLight.position.set(-7, 5, 5);
     scene.add(pinkLight);
-    
-    const cyanLight = new THREE.PointLight(0x00ffff, 0.8, 18);
-    cyanLight.position.set(6, 4, -4);
+
+    const cyanLight = new THREE.PointLight(0x00ffff, 1.2, 20);
+    cyanLight.position.set(7, 5, -5);
     scene.add(cyanLight);
-    
-    const greenLight = new THREE.PointLight(0x00ff88, 0.6, 12);
-    greenLight.position.set(0, 5, 3);
-    scene.add(greenLight);
-    
+
+    const warmLight = new THREE.PointLight(0xffaa44, 2, 12);
+    warmLight.position.set(0, 3, 2);
+    scene.add(warmLight);
+
+    // Helpers
+    const box = (w, h, d, col, opts = {}) => {
+      const m = new THREE.MeshStandardMaterial({
+        color: col, roughness: opts.r ?? 0.7, metalness: opts.m ?? 0.1,
+        emissive: opts.e ?? 0x000000, emissiveIntensity: opts.ei ?? 0
+      });
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+      mesh.castShadow = true; mesh.receiveShadow = true;
+      return mesh;
+    };
+
+    const cyl = (rt, rb, h, col, seg = 16, opts = {}) => {
+      const m = new THREE.MeshStandardMaterial({
+        color: col, roughness: opts.r ?? 0.6, metalness: opts.m ?? 0.2,
+        emissive: opts.e ?? 0x000000, emissiveIntensity: opts.ei ?? 0
+      });
+      const mesh = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg), m);
+      mesh.castShadow = true; mesh.receiveShadow = true;
+      return mesh;
+    };
+
     // Ground
-    const groundGeo = new THREE.CircleGeometry(20, 64);
-    const groundMat = new THREE.MeshStandardMaterial({ 
-      color: 0x1a0a2e,
-      roughness: 0.9,
-      metalness: 0.1
-    });
-    const ground = new THREE.Mesh(groundGeo, groundMat);
+    const ground = new THREE.Mesh(
+      new THREE.CircleGeometry(25, 64),
+      new THREE.MeshStandardMaterial({ color: 0x1a0a25, roughness: 0.95 })
+    );
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add(ground);
-    
-    // Ground glow ring
-    const ringGeo = new THREE.RingGeometry(8, 12, 64);
-    const ringMat = new THREE.MeshBasicMaterial({ 
-      color: 0x4a1a6b,
-      transparent: true,
-      opacity: 0.3,
-      side: THREE.DoubleSide
-    });
-    const ring = new THREE.Mesh(ringGeo, ringMat);
-    ring.rotation.x = -Math.PI / 2;
-    ring.position.y = 0.01;
-    scene.add(ring);
-    
-    // Helper functions
-    const createBox = (w, h, d, color, opts = {}) => {
-      const mat = new THREE.MeshStandardMaterial({ 
-        color,
-        roughness: opts.roughness || 0.7,
-        metalness: opts.metalness || 0.1,
-        emissive: opts.emissive || 0x000000,
-        emissiveIntensity: opts.emissiveIntensity || 0
-      });
-      const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      return mesh;
-    };
-    
-    const createCylinder = (rt, rb, h, color, segments = 16, opts = {}) => {
-      const mat = new THREE.MeshStandardMaterial({ 
-        color,
-        roughness: opts.roughness || 0.6,
-        metalness: opts.metalness || 0.2,
-        emissive: opts.emissive || 0x000000,
-        emissiveIntensity: opts.emissiveIntensity || 0
-      });
-      const mesh = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, segments), mat);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      return mesh;
-    };
-    
-    // Coffee Shop Building
+
+    // Glow rings
+    for (let i = 0; i < 3; i++) {
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(6 + i * 4, 7 + i * 4, 64),
+        new THREE.MeshBasicMaterial({ color: i % 2 ? 0x4a1a6b : 0x2a0a4b, transparent: true, opacity: 0.2, side: THREE.DoubleSide })
+      );
+      ring.rotation.x = -Math.PI / 2;
+      ring.position.y = 0.01 + i * 0.005;
+      scene.add(ring);
+    }
+
+    // Shop Group
     const shop = new THREE.Group();
-    
-    // Main walls
-    const backWall = createBox(6, 4, 0.3, 0x5d3a1a);
-    backWall.position.set(0, 2, -2);
+
+    // Walls
+    const backWall = box(7, 4.5, 0.3, 0x5d3a1a);
+    backWall.position.set(0, 2.25, -2.5);
     shop.add(backWall);
-    
-    const leftWall = createBox(0.3, 4, 4, 0x4a2d15);
-    leftWall.position.set(-3, 2, 0);
+
+    const leftWall = box(0.3, 4.5, 5, 0x4a2d15);
+    leftWall.position.set(-3.5, 2.25, 0);
     shop.add(leftWall);
-    
-    const rightWall = createBox(0.3, 4, 4, 0x4a2d15);
-    rightWall.position.set(3, 2, 0);
+
+    const rightWall = box(0.3, 4.5, 5, 0x4a2d15);
+    rightWall.position.set(3.5, 2.25, 0);
     shop.add(rightWall);
-    
+
     // Floor
-    const floor = createBox(6, 0.2, 4, 0x3d2510);
+    const floor = box(7, 0.2, 5, 0x2d1810);
     floor.position.set(0, 0.1, 0);
     shop.add(floor);
-    
+
     // Counter
-    const counterTop = createBox(4.5, 0.15, 1, 0xdeb887, { roughness: 0.4 });
-    counterTop.position.set(0, 1.2, 1.5);
+    const counterTop = box(5.5, 0.18, 1.2, 0xdeb887, { r: 0.35 });
+    counterTop.position.set(0, 1.3, 2);
     shop.add(counterTop);
-    
-    const counterFront = createBox(4.5, 1.2, 0.15, 0xcd853f);
-    counterFront.position.set(0, 0.6, 2);
-    shop.add(counterFront);
-    
-    const counterSide1 = createBox(0.15, 1.2, 1, 0xb8733d);
-    counterSide1.position.set(-2.2, 0.6, 1.5);
-    shop.add(counterSide1);
-    
-    const counterSide2 = createBox(0.15, 1.2, 1, 0xb8733d);
-    counterSide2.position.set(2.2, 0.6, 1.5);
-    shop.add(counterSide2);
-    
+
+    const counterBody = box(5.5, 1.3, 1.1, 0xb8733d);
+    counterBody.position.set(0, 0.65, 2);
+    shop.add(counterBody);
+
+    const counterTrim = box(5.6, 0.08, 0.1, 0x8b5a2b);
+    counterTrim.position.set(0, 1.2, 2.55);
+    shop.add(counterTrim);
+
     // Roof
-    const roof = createBox(7, 0.4, 5.5, 0x9932cc, { 
-      emissive: 0x6b238e, 
-      emissiveIntensity: 0.4,
-      metalness: 0.4,
-      roughness: 0.3
-    });
-    roof.position.set(0, 4.2, 0);
+    const roof = box(8, 0.5, 6.5, 0x9932cc, { e: 0x6b238e, ei: 0.5, m: 0.4, r: 0.25 });
+    roof.position.set(0, 4.75, 0);
     shop.add(roof);
-    
-    // Roof overhang
-    const overhang = createBox(6.5, 0.2, 1.8, 0x8b008b, {
-      emissive: 0x4a0a4a,
-      emissiveIntensity: 0.3
-    });
-    overhang.position.set(0, 4, 2.5);
+
+    const overhang = box(7.5, 0.25, 2.2, 0x8b008b, { e: 0x5a005a, ei: 0.4 });
+    overhang.position.set(0, 4.4, 3);
     shop.add(overhang);
-    
-    // Roof trim lights
-    const trimGeo = new THREE.BoxGeometry(6.8, 0.08, 0.08);
-    const trimMat = new THREE.MeshBasicMaterial({ color: 0xff00ff });
-    const trim = new THREE.Mesh(trimGeo, trimMat);
-    trim.position.set(0, 3.95, 3.3);
-    shop.add(trim);
-    
-    scene.add(shop);
-    
-    // Neon Sign
-    const signGroup = new THREE.Group();
-    
-    const signBack = createBox(4.5, 1, 0.2, 0x111122);
-    signGroup.add(signBack);
-    
-    const signBorder = new THREE.Mesh(
-      new THREE.BoxGeometry(4.6, 1.1, 0.15),
-      new THREE.MeshBasicMaterial({ color: 0x00ff88 })
+
+    // Neon trim
+    const neonTrim = new THREE.Mesh(
+      new THREE.BoxGeometry(7.8, 0.06, 0.06),
+      new THREE.MeshBasicMaterial({ color: 0xff00ff })
     );
-    signBorder.position.z = 0.08;
-    signGroup.add(signBorder);
-    
-    const signInner = createBox(4.4, 0.9, 0.18, 0x0a0a15);
-    signInner.position.z = 0.1;
-    signGroup.add(signInner);
-    
-    const signGlow = new THREE.PointLight(0x00ff88, 2, 8);
-    signGlow.position.set(0, 0, 1);
-    signGroup.add(signGlow);
-    
-    signGroup.position.set(0, 5, 2.5);
-    scene.add(signGroup);
-    
-    // Coffee cup icon on sign
-    const cupIcon = new THREE.Group();
-    const cupBody = createCylinder(0.25, 0.2, 0.5, 0xffffff, 16, { roughness: 0.3 });
-    cupIcon.add(cupBody);
-    
-    const handle = new THREE.Mesh(
-      new THREE.TorusGeometry(0.12, 0.03, 8, 16, Math.PI),
-      new THREE.MeshStandardMaterial({ color: 0xffffff })
-    );
-    handle.rotation.z = Math.PI / 2;
-    handle.rotation.y = Math.PI / 2;
-    handle.position.set(0.28, 0, 0);
-    cupIcon.add(handle);
-    
-    cupIcon.position.set(3, 5, 2.8);
-    cupIcon.rotation.x = 0.2;
-    scene.add(cupIcon);
-    
-    // Steam particles
-    const steamParticles = [];
-    for (let i = 0; i < 8; i++) {
-      const steam = new THREE.Mesh(
-        new THREE.SphereGeometry(0.05, 8, 8),
-        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 })
-      );
-      steam.position.set(3 + (Math.random() - 0.5) * 0.2, 5.3, 2.8);
-      steam.userData = { 
-        speed: 0.01 + Math.random() * 0.02,
-        offset: Math.random() * Math.PI * 2
-      };
-      scene.add(steam);
-      steamParticles.push(steam);
+    neonTrim.position.set(0, 4.25, 4);
+    shop.add(neonTrim);
+
+    // Shelves
+    for (let i = 0; i < 3; i++) {
+      const shelf = box(2.5, 0.1, 0.4, 0x8b5a2b);
+      shelf.position.set(-1.8, 1.8 + i * 0.9, -2.2);
+      shop.add(shelf);
     }
+
+    scene.add(shop);
+
+    // Neon Sign
+    const signG = new THREE.Group();
+    const signBack = box(5, 1.2, 0.2, 0x0a0a15);
+    signG.add(signBack);
+
+    const signBorderMat = new THREE.MeshBasicMaterial({ color: 0x00ffa3 });
+    const signBorderOuter = new THREE.Mesh(new THREE.BoxGeometry(5.15, 1.35, 0.15), signBorderMat);
+    signBorderOuter.position.z = 0.08;
+    signG.add(signBorderOuter);
+
+    const signInner = box(4.9, 1.1, 0.18, 0x050510);
+    signInner.position.z = 0.1;
+    signG.add(signInner);
+
+    const signGlow = new THREE.PointLight(0x00ffa3, 3, 10);
+    signGlow.position.set(0, 0, 1.5);
+    signG.add(signGlow);
+
+    signG.position.set(0, 5.8, 3);
+    scene.add(signG);
+
+    // Coffee cup icon
+    const cupIconG = new THREE.Group();
+    const cupBody = cyl(0.3, 0.22, 0.6, 0xffffff, 20, { r: 0.25 });
+    cupIconG.add(cupBody);
     
+    const cupHandle = new THREE.Mesh(
+      new THREE.TorusGeometry(0.15, 0.04, 8, 20, Math.PI),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.25 })
+    );
+    cupHandle.rotation.z = Math.PI / 2;
+    cupHandle.rotation.y = Math.PI / 2;
+    cupHandle.position.set(0.35, 0, 0);
+    cupIconG.add(cupHandle);
+
+    cupIconG.position.set(3.5, 5.8, 3.3);
+    scene.add(cupIconG);
+
+    // Steam from icon
+    const steamParts = [];
+    for (let i = 0; i < 12; i++) {
+      const s = new THREE.Mesh(
+        new THREE.SphereGeometry(0.06, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.7 })
+      );
+      s.position.set(3.5, 6.2 + Math.random() * 0.5, 3.3);
+      s.userData = { spd: 0.008 + Math.random() * 0.012, off: Math.random() * Math.PI * 2, startY: 6.2 };
+      scene.add(s);
+      steamParts.push(s);
+    }
+
+    // Shopkeeper
+    const keeper = new THREE.Group();
+
+    // Body
+    const torso = cyl(0.35, 0.3, 1, 0x2d5a27, 12);
+    torso.position.y = 1.2;
+    keeper.add(torso);
+
+    // Apron
+    const apron = box(0.55, 0.7, 0.15, 0xf5deb3);
+    apron.position.set(0, 1, 0.2);
+    keeper.add(apron);
+
+    // Head
+    const head = new THREE.Mesh(
+      new THREE.SphereGeometry(0.28, 16, 16),
+      new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.8 })
+    );
+    head.position.y = 2;
+    keeper.add(head);
+
+    // Hair
+    const hair = new THREE.Mesh(
+      new THREE.SphereGeometry(0.3, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2),
+      new THREE.MeshStandardMaterial({ color: 0x3d2314, roughness: 0.9 })
+    );
+    hair.position.y = 2.05;
+    keeper.add(hair);
+
+    // Eyes
+    const eyeGeo = new THREE.SphereGeometry(0.04, 8, 8);
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0x222222 });
+    const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
+    leftEye.position.set(-0.1, 2.02, 0.24);
+    keeper.add(leftEye);
+    const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
+    rightEye.position.set(0.1, 2.02, 0.24);
+    keeper.add(rightEye);
+
+    // Smile
+    const smile = new THREE.Mesh(
+      new THREE.TorusGeometry(0.08, 0.02, 8, 12, Math.PI),
+      new THREE.MeshBasicMaterial({ color: 0xcc6666 })
+    );
+    smile.rotation.x = Math.PI;
+    smile.rotation.z = Math.PI;
+    smile.position.set(0, 1.92, 0.25);
+    keeper.add(smile);
+
+    // Arms
+    const armMat = new THREE.MeshStandardMaterial({ color: 0x2d5a27, roughness: 0.7 });
+    const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.07, 0.6, 8), armMat);
+    leftArm.position.set(-0.4, 1.1, 0);
+    leftArm.rotation.z = 0.4;
+    keeper.add(leftArm);
+
+    const rightArm = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.07, 0.6, 8), armMat);
+    rightArm.position.set(0.4, 1.1, 0);
+    rightArm.rotation.z = -0.4;
+    keeper.add(rightArm);
+
+    // Hands
+    const handMat = new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.8 });
+    const leftHand = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), handMat);
+    leftHand.position.set(-0.55, 0.85, 0.1);
+    keeper.add(leftHand);
+
+    const rightHand = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), handMat);
+    rightHand.position.set(0.55, 0.85, 0.1);
+    keeper.add(rightHand);
+
+    // Legs
+    const legMat = new THREE.MeshStandardMaterial({ color: 0x1a1a3a, roughness: 0.8 });
+    const leftLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.7, 8), legMat);
+    leftLeg.position.set(-0.15, 0.35, 0);
+    keeper.add(leftLeg);
+
+    const rightLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.7, 8), legMat);
+    rightLeg.position.set(0.15, 0.35, 0);
+    keeper.add(rightLeg);
+
+    keeper.position.set(0, 0, 1);
+    scene.add(keeper);
+
     // Coffee cups on counter
-    const createCoffeeCup = (x, z, cupColor = 0xffffff) => {
-      const group = new THREE.Group();
+    const cups = [];
+    const createCup = (x, z, col) => {
+      const g = new THREE.Group();
+      const c = cyl(0.18, 0.14, 0.42, col, 16, { r: 0.3 });
+      c.position.y = 0.21;
+      g.add(c);
       
-      const cup = createCylinder(0.18, 0.14, 0.4, cupColor, 16, { roughness: 0.3 });
-      cup.position.y = 0.2;
-      group.add(cup);
+      const cof = cyl(0.15, 0.15, 0.1, 0x3d1f0d, 16);
+      cof.position.y = 0.38;
+      g.add(cof);
       
-      const coffee = createCylinder(0.15, 0.15, 0.08, 0x3d1f0d, 16);
-      coffee.position.y = 0.35;
-      group.add(coffee);
-      
-      const cupHandle = new THREE.Mesh(
+      const h = new THREE.Mesh(
         new THREE.TorusGeometry(0.1, 0.025, 8, 16, Math.PI),
-        new THREE.MeshStandardMaterial({ color: cupColor, roughness: 0.3 })
+        new THREE.MeshStandardMaterial({ color: col, roughness: 0.3 })
       );
-      cupHandle.rotation.z = Math.PI / 2;
-      cupHandle.rotation.y = Math.PI / 2;
-      cupHandle.position.set(0.2, 0.2, 0);
-      group.add(cupHandle);
+      h.rotation.set(0, Math.PI / 2, Math.PI / 2);
+      h.position.set(0.2, 0.21, 0);
+      g.add(h);
       
-      group.position.set(x, 1.28, z);
-      return group;
+      g.position.set(x, 1.4, z);
+      g.userData = { baseY: 1.4, phase: Math.random() * Math.PI * 2 };
+      return g;
     };
-    
-    scene.add(createCoffeeCup(-1.2, 1.3, 0xffffff));
-    scene.add(createCoffeeCup(-0.4, 1.4, 0xff6b6b));
-    scene.add(createCoffeeCup(0.4, 1.3, 0x87ceeb));
-    scene.add(createCoffeeCup(1.2, 1.4, 0xffd700));
-    
+
+    const cupColors = [0xffffff, 0xff6b6b, 0x87ceeb, 0xffd700, 0x98fb98];
+    const cupPositions = [[-1.8, 1.8], [-0.9, 1.9], [0, 1.8], [0.9, 1.9], [1.8, 1.8]];
+    cupPositions.forEach((p, i) => {
+      const cup = createCup(p[0], p[1], cupColors[i]);
+      scene.add(cup);
+      cups.push(cup);
+    });
+
     // Espresso Machine
-    const machine = new THREE.Group();
-    const machineBody = createBox(0.8, 1, 0.6, 0xc0c0c0, { metalness: 0.8, roughness: 0.2 });
-    machineBody.position.y = 0.5;
-    machine.add(machineBody);
-    
-    const machineTop = createBox(0.85, 0.15, 0.65, 0x8b0000);
-    machineTop.position.y = 1.05;
-    machine.add(machineTop);
-    
-    const gauge = createCylinder(0.08, 0.08, 0.05, 0x222222, 16);
+    const machineG = new THREE.Group();
+    const mBody = box(1, 1.2, 0.7, 0xc0c0c0, { m: 0.85, r: 0.15 });
+    mBody.position.y = 0.6;
+    machineG.add(mBody);
+
+    const mTop = box(1.05, 0.15, 0.75, 0x8b0000);
+    mTop.position.y = 1.25;
+    machineG.add(mTop);
+
+    const gauge = cyl(0.1, 0.1, 0.06, 0x222222, 16);
     gauge.rotation.x = Math.PI / 2;
-    gauge.position.set(0, 0.7, 0.32);
-    machine.add(gauge);
-    
-    machine.position.set(1.8, 1.28, 1.2);
-    scene.add(machine);
-    
+    gauge.position.set(0, 0.8, 0.38);
+    machineG.add(gauge);
+
+    const gaugeGlass = new THREE.Mesh(
+      new THREE.CircleGeometry(0.08, 16),
+      new THREE.MeshBasicMaterial({ color: 0x44ff44 })
+    );
+    gaugeGlass.position.set(0, 0.8, 0.42);
+    machineG.add(gaugeGlass);
+
+    machineG.position.set(-2.2, 1.4, 1.6);
+    scene.add(machineG);
+
     // Stools
+    const stools = [];
     const createStool = (x, z) => {
-      const group = new THREE.Group();
+      const g = new THREE.Group();
+      const seat = cyl(0.38, 0.32, 0.14, 0xcd853f, 16, { r: 0.45 });
+      seat.position.y = 0.82;
+      g.add(seat);
       
-      const seat = createCylinder(0.35, 0.3, 0.12, 0xcd853f, 16, { roughness: 0.5 });
-      seat.position.y = 0.75;
-      group.add(seat);
+      const leg = cyl(0.07, 0.1, 0.82, 0x3a2510, 8);
+      leg.position.y = 0.41;
+      g.add(leg);
       
-      const leg = createCylinder(0.06, 0.1, 0.75, 0x4a3520, 8);
-      leg.position.y = 0.375;
-      group.add(leg);
+      const base = cyl(0.28, 0.28, 0.06, 0x2a1a0a, 16);
+      base.position.y = 0.03;
+      g.add(base);
       
-      const base = createCylinder(0.25, 0.25, 0.05, 0x3a2510, 16);
-      base.position.y = 0.025;
-      group.add(base);
-      
-      group.position.set(x, 0, z);
-      return group;
+      g.position.set(x, 0, z);
+      g.userData = { baseY: 0 };
+      return g;
     };
-    
-    scene.add(createStool(-1.3, 3.2));
-    scene.add(createStool(0, 3.5));
-    scene.add(createStool(1.3, 3.2));
-    
-    // 3D Billboard Cards
+
+    [[-1.5, 3.5], [0, 3.8], [1.5, 3.5]].forEach(p => {
+      const stool = createStool(p[0], p[1]);
+      scene.add(stool);
+      stools.push(stool);
+    });
+
+    // Billboards
     const billboards = [];
-    
-    const createBillboard = (label, color, pos, rotY) => {
-      const group = new THREE.Group();
+    const createBillboard = (color, pos, rotY) => {
+      const g = new THREE.Group();
       
-      // Post
-      const post = createCylinder(0.08, 0.12, pos.y, 0x2a2a2a, 8, { metalness: 0.6 });
-      post.position.y = pos.y / 2;
-      group.add(post);
+      const post = cyl(0.1, 0.14, pos.h, 0x2a2a2a, 8, { m: 0.6 });
+      post.position.y = pos.h / 2;
+      g.add(post);
       
-      // Frame
-      const frame = createBox(2.2, 1.2, 0.2, 0x1a1a1a, { metalness: 0.4 });
-      frame.position.y = pos.y + 0.6;
-      group.add(frame);
+      const frame = box(2.4, 1.4, 0.25, 0x151515, { m: 0.5 });
+      frame.position.y = pos.h + 0.7;
+      g.add(frame);
       
-      // Glowing face
       const face = new THREE.Mesh(
-        new THREE.BoxGeometry(2, 1, 0.15),
-        new THREE.MeshStandardMaterial({
-          color: color,
-          emissive: color,
-          emissiveIntensity: 0.6,
-          roughness: 0.2,
-          metalness: 0.3
-        })
+        new THREE.BoxGeometry(2.2, 1.2, 0.2),
+        new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.7, roughness: 0.15, metalness: 0.4 })
       );
-      face.position.set(0, pos.y + 0.6, 0.1);
-      group.add(face);
+      face.position.set(0, pos.h + 0.7, 0.12);
+      g.add(face);
       
-      // Border glow
-      const borderMat = new THREE.MeshBasicMaterial({ color: color });
-      const borderTop = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.05, 0.18), borderMat);
-      borderTop.position.set(0, pos.y + 1.1, 0.1);
-      group.add(borderTop);
+      const borderMat = new THREE.MeshBasicMaterial({ color });
+      [[0, 1.25, 0.13], [0, -1.25, 0.13]].forEach((p, i) => {
+        const b = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.06, 0.22), borderMat);
+        b.position.set(p[0], pos.h + 0.7 + (i === 0 ? 0.55 : -0.55), p[2]);
+        g.add(b);
+      });
       
-      const borderBottom = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.05, 0.18), borderMat);
-      borderBottom.position.set(0, pos.y + 0.1, 0.1);
-      group.add(borderBottom);
+      const light = new THREE.PointLight(color, 1, 6);
+      light.position.set(0, pos.h + 0.7, 1.2);
+      g.add(light);
       
-      // Light
-      const light = new THREE.PointLight(color, 0.8, 5);
-      light.position.set(0, pos.y + 0.6, 1);
-      group.add(light);
+      g.position.set(pos.x, 0, pos.z);
+      g.rotation.y = rotY;
       
-      group.position.set(pos.x, 0, pos.z);
-      group.rotation.y = rotY;
-      
-      return { group, face, light };
+      return { g, face, light };
     };
-    
-    const billboardData = [
-      { label: 'PROJECTS', color: 0xff1493, pos: { x: -5.5, y: 2, z: 4 }, rot: 0.4 },
-      { label: 'MENU', color: 0x00ced1, pos: { x: -6, y: 1.8, z: -1 }, rot: 1 },
-      { label: 'ABOUT', color: 0x32cd32, pos: { x: -5, y: 2.2, z: -4 }, rot: 1.5 },
-      { label: 'CONTACT', color: 0xffa500, pos: { x: 5.5, y: 2, z: 3 }, rot: -0.4 }
+
+    const bbData = [
+      { color: 0xff1493, pos: { x: -6, h: 2.2, z: 5 }, rot: 0.5 },
+      { color: 0x00ced1, pos: { x: -7, h: 2, z: -1 }, rot: 1.1 },
+      { color: 0x32cd32, pos: { x: -5.5, h: 2.4, z: -5 }, rot: 1.6 },
+      { color: 0xffa500, pos: { x: 6, h: 2.2, z: 4 }, rot: -0.5 }
     ];
-    
-    billboardData.forEach(data => {
-      const bb = createBillboard(data.label, data.color, data.pos, data.rot);
-      scene.add(bb.group);
+
+    bbData.forEach(d => {
+      const bb = createBillboard(d.color, d.pos, d.rot);
+      scene.add(bb.g);
       billboards.push(bb);
     });
-    
+
     // Signpost
-    const signpost = new THREE.Group();
-    
-    const mainPost = createCylinder(0.1, 0.15, 5, 0x2a2a2a, 8, { metalness: 0.5 });
-    mainPost.position.y = 2.5;
-    signpost.add(mainPost);
-    
-    const createArrowSign = (color, y, angle, length = 1.8) => {
-      const sign = createBox(length, 0.45, 0.12, color, {
-        emissive: color,
-        emissiveIntensity: 0.4
-      });
-      sign.position.set(length / 2 + 0.1, y, 0);
-      sign.rotation.y = angle;
-      return sign;
-    };
-    
-    signpost.add(createArrowSign(0xff69b4, 4.5, 0.15));
-    signpost.add(createArrowSign(0x40e0d0, 3.9, -0.1));
-    signpost.add(createArrowSign(0x98fb98, 3.3, 0.2));
-    signpost.add(createArrowSign(0xffd700, 2.7, -0.15));
-    
-    signpost.position.set(5, 0, -3);
-    scene.add(signpost);
-    
+    const signpostG = new THREE.Group();
+    const mainPost = cyl(0.12, 0.16, 5.5, 0x252525, 8, { m: 0.6 });
+    mainPost.position.y = 2.75;
+    signpostG.add(mainPost);
+
+    const signColors = [0xff69b4, 0x40e0d0, 0x98fb98, 0xffd700];
+    const signYs = [5, 4.3, 3.6, 2.9];
+    const signs = [];
+    signColors.forEach((col, i) => {
+      const s = box(2, 0.5, 0.14, col, { e: col, ei: 0.5 });
+      s.position.set(1.1, signYs[i], 0);
+      s.rotation.y = (i % 2 ? -0.12 : 0.12);
+      signpostG.add(s);
+      signs.push(s);
+    });
+
+    signpostG.position.set(6, 0, -4);
+    scene.add(signpostG);
+
     // Street Lamps
-    const createLamp = (x, z, armDir = 1) => {
-      const group = new THREE.Group();
+    const lamps = [];
+    const createLamp = (x, z, dir = 1) => {
+      const g = new THREE.Group();
       
-      const pole = createCylinder(0.08, 0.12, 5, 0x3d2a5a, 8, { metalness: 0.4 });
-      pole.position.y = 2.5;
-      group.add(pole);
+      const pole = cyl(0.1, 0.14, 5.5, 0x3d2a5a, 8, { m: 0.45 });
+      pole.position.y = 2.75;
+      g.add(pole);
       
-      const arm = createBox(1.5, 0.1, 0.1, 0x3d2a5a);
-      arm.position.set(0.75 * armDir, 4.8, 0);
-      group.add(arm);
+      const arm = box(1.8, 0.12, 0.12, 0x3d2a5a);
+      arm.position.set(0.9 * dir, 5.3, 0);
+      g.add(arm);
       
-      const bulbGlow = new THREE.Mesh(
-        new THREE.SphereGeometry(0.35, 16, 16),
+      const bulb = new THREE.Mesh(
+        new THREE.SphereGeometry(0.4, 20, 20),
         new THREE.MeshBasicMaterial({ color: 0xfffacd })
       );
-      bulbGlow.position.set(1.4 * armDir, 4.5, 0);
-      group.add(bulbGlow);
+      bulb.position.set(1.7 * dir, 5, 0);
+      g.add(bulb);
       
-      const light = new THREE.PointLight(0xffd700, 1.5, 10);
-      light.position.set(1.4 * armDir, 4.5, 0);
+      const light = new THREE.PointLight(0xffd700, 2, 12);
+      light.position.set(1.7 * dir, 5, 0);
       light.castShadow = true;
-      group.add(light);
+      g.add(light);
       
-      group.position.set(x, 0, z);
-      return { group, light, bulb: bulbGlow };
+      g.position.set(x, 0, z);
+      return { g, light, bulb };
     };
-    
-    const lamp1 = createLamp(-4.5, 5, 1);
-    const lamp2 = createLamp(4.5, 5, -1);
-    scene.add(lamp1.group);
-    scene.add(lamp2.group);
-    
-    // Chalkboard
-    const chalkboard = new THREE.Group();
-    const boardBack = createBox(1, 1.4, 0.08, 0x1a1a1a);
-    chalkboard.add(boardBack);
-    
-    const boardFrame = createBox(1.1, 1.5, 0.05, 0x5d3a1a);
-    boardFrame.position.z = -0.04;
-    chalkboard.add(boardFrame);
-    
-    const standLeft = createBox(0.08, 1.2, 0.08, 0x4a2d15);
-    standLeft.position.set(-0.4, -0.6, 0.3);
-    standLeft.rotation.x = 0.2;
-    chalkboard.add(standLeft);
-    
-    const standRight = createBox(0.08, 1.2, 0.08, 0x4a2d15);
-    standRight.position.set(0.4, -0.6, 0.3);
-    standRight.rotation.x = 0.2;
-    chalkboard.add(standRight);
-    
-    chalkboard.position.set(5, 1, 5);
-    chalkboard.rotation.y = -0.8;
-    scene.add(chalkboard);
-    
+
+    const lamp1 = createLamp(-5, 6, 1);
+    const lamp2 = createLamp(5, 6, -1);
+    scene.add(lamp1.g);
+    scene.add(lamp2.g);
+    lamps.push(lamp1, lamp2);
+
     // Floating particles
     const particles = [];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 80; i++) {
       const p = new THREE.Mesh(
-        new THREE.SphereGeometry(0.03, 6, 6),
-        new THREE.MeshBasicMaterial({ 
-          color: Math.random() > 0.5 ? 0xff69b4 : 0x00ffff,
-          transparent: true,
-          opacity: 0.5
-        })
+        new THREE.SphereGeometry(0.04, 6, 6),
+        new THREE.MeshBasicMaterial({ color: Math.random() > 0.5 ? 0xff69b4 : 0x00ffff, transparent: true, opacity: 0.5 })
       );
-      p.position.set(
-        (Math.random() - 0.5) * 25,
-        Math.random() * 10,
-        (Math.random() - 0.5) * 25
-      );
-      p.userData = {
-        speed: 0.005 + Math.random() * 0.01,
-        offset: Math.random() * Math.PI * 2
-      };
+      p.position.set((Math.random() - 0.5) * 35, Math.random() * 15, (Math.random() - 0.5) * 35);
+      p.userData = { spd: 0.003 + Math.random() * 0.008, off: Math.random() * Math.PI * 2 };
       scene.add(p);
       particles.push(p);
     }
-    
-    // Mouse/Touch controls
+
+    // Camera Controls
     let isDragging = false;
-    let previousMouse = { x: 0, y: 0 };
-    let spherical = { theta: Math.PI / 4, phi: Math.PI / 3, radius: 16 };
-    let targetSpherical = { ...spherical };
+    let prevMouse = { x: 0, y: 0 };
+    let spherical = { theta: 0.6, phi: 1.1, radius: 18 };
+    let target = { theta: 0.6, phi: 1.1, radius: 18 };
     let autoRotate = true;
-    let lastInteraction = 0;
-    
-    const onPointerDown = (e) => {
+    let lastTouch = 0;
+
+    const ease = (current, target, factor) => current + (target - current) * factor;
+
+    const onDown = e => {
       isDragging = true;
       autoRotate = false;
-      lastInteraction = Date.now();
-      const pos = e.touches ? e.touches[0] : e;
-      previousMouse = { x: pos.clientX, y: pos.clientY };
+      const p = e.touches ? e.touches[0] : e;
+      prevMouse = { x: p.clientX, y: p.clientY };
     };
-    
-    const onPointerMove = (e) => {
+
+    const onMove = e => {
       if (!isDragging) return;
-      const pos = e.touches ? e.touches[0] : e;
-      const deltaX = pos.clientX - previousMouse.x;
-      const deltaY = pos.clientY - previousMouse.y;
-      
-      targetSpherical.theta -= deltaX * 0.005;
-      targetSpherical.phi -= deltaY * 0.005;
-      targetSpherical.phi = Math.max(0.3, Math.min(Math.PI / 2 - 0.1, targetSpherical.phi));
-      
-      previousMouse = { x: pos.clientX, y: pos.clientY };
+      const p = e.touches ? e.touches[0] : e;
+      const dx = p.clientX - prevMouse.x;
+      const dy = p.clientY - prevMouse.y;
+      target.theta -= dx * 0.004;
+      target.phi -= dy * 0.004;
+      target.phi = Math.max(0.4, Math.min(1.5, target.phi));
+      prevMouse = { x: p.clientX, y: p.clientY };
     };
-    
-    const onPointerUp = () => {
+
+    const onUp = () => {
       isDragging = false;
-      lastInteraction = Date.now();
+      lastTouch = performance.now();
     };
-    
-    const onWheel = (e) => {
+
+    const onWheel = e => {
       e.preventDefault();
-      targetSpherical.radius += e.deltaY * 0.01;
-      targetSpherical.radius = Math.max(8, Math.min(25, targetSpherical.radius));
-      lastInteraction = Date.now();
+      target.radius += e.deltaY * 0.012;
+      target.radius = Math.max(10, Math.min(30, target.radius));
       autoRotate = false;
+      lastTouch = performance.now();
     };
-    
-    container.addEventListener('mousedown', onPointerDown);
-    container.addEventListener('mousemove', onPointerMove);
-    container.addEventListener('mouseup', onPointerUp);
-    container.addEventListener('mouseleave', onPointerUp);
-    container.addEventListener('touchstart', onPointerDown, { passive: true });
-    container.addEventListener('touchmove', onPointerMove, { passive: true });
-    container.addEventListener('touchend', onPointerUp);
-    container.addEventListener('wheel', onWheel, { passive: false });
-    
+
+    canvas.addEventListener('mousedown', onDown);
+    canvas.addEventListener('mousemove', onMove);
+    canvas.addEventListener('mouseup', onUp);
+    canvas.addEventListener('mouseleave', onUp);
+    canvas.addEventListener('touchstart', onDown, { passive: true });
+    canvas.addEventListener('touchmove', onMove, { passive: true });
+    canvas.addEventListener('touchend', onUp);
+    canvas.addEventListener('wheel', onWheel, { passive: false });
+
     // Animation
     let time = 0;
-    loading.style.display = 'none';
-    
+    const clock = new THREE.Clock();
+
     const animate = () => {
       requestAnimationFrame(animate);
-      time += 0.016;
-      
-      // Auto rotate after 3 seconds
-      if (!isDragging && Date.now() - lastInteraction > 3000) {
-        autoRotate = true;
-      }
-      
-      if (autoRotate) {
-        targetSpherical.theta += 0.003;
-      }
-      
-      // Smooth camera interpolation
-      spherical.theta += (targetSpherical.theta - spherical.theta) * 0.05;
-      spherical.phi += (targetSpherical.phi - spherical.phi) * 0.05;
-      spherical.radius += (targetSpherical.radius - spherical.radius) * 0.05;
-      
+      const delta = clock.getDelta();
+      time += delta;
+
+      // Auto rotate after 4 seconds
+      if (!isDragging && performance.now() - lastTouch > 4000) autoRotate = true;
+      if (autoRotate) target.theta += delta * 0.15;
+
+      // Super smooth camera interpolation
+      spherical.theta = ease(spherical.theta, target.theta, 0.035);
+      spherical.phi = ease(spherical.phi, target.phi, 0.035);
+      spherical.radius = ease(spherical.radius, target.radius, 0.035);
+
       camera.position.x = spherical.radius * Math.sin(spherical.phi) * Math.sin(spherical.theta);
       camera.position.y = spherical.radius * Math.cos(spherical.phi);
       camera.position.z = spherical.radius * Math.sin(spherical.phi) * Math.cos(spherical.theta);
-      camera.lookAt(0, 2, 0);
-      
-      // Animate neon sign
-      signGlow.intensity = 2 + Math.sin(time * 3) * 0.5;
-      
-      // Animate billboards
+      camera.lookAt(0, 2.5, 0);
+
+      // Shopkeeper animation
+      keeper.position.y = Math.sin(time * 1.5) * 0.03;
+      keeper.rotation.y = Math.sin(time * 0.8) * 0.15;
+      leftArm.rotation.z = 0.4 + Math.sin(time * 2) * 0.2;
+      rightArm.rotation.z = -0.4 - Math.sin(time * 2 + 1) * 0.2;
+      head.rotation.y = Math.sin(time * 0.6) * 0.2;
+      head.rotation.x = Math.sin(time * 0.4) * 0.05;
+
+      // Cup bobbing animation
+      cups.forEach((cup, i) => {
+        cup.position.y = cup.userData.baseY + Math.sin(time * 1.8 + cup.userData.phase) * 0.025;
+        cup.rotation.y = Math.sin(time * 0.5 + i) * 0.1;
+      });
+
+      // Stool subtle movement
+      stools.forEach((stool, i) => {
+        stool.rotation.y = Math.sin(time * 0.3 + i * 2) * 0.05;
+      });
+
+      // Billboard pulsing
       billboards.forEach((bb, i) => {
-        const pulse = 0.6 + Math.sin(time * 2 + i * 0.8) * 0.2;
+        const pulse = 0.7 + Math.sin(time * 2.5 + i * 0.9) * 0.25;
         bb.face.material.emissiveIntensity = pulse;
-        bb.light.intensity = 0.8 + Math.sin(time * 2 + i * 0.8) * 0.3;
+        bb.light.intensity = 1 + Math.sin(time * 2.5 + i * 0.9) * 0.4;
       });
-      
-      // Animate lamps
-      lamp1.light.intensity = 1.5 + Math.sin(time * 1.5) * 0.2;
-      lamp2.light.intensity = 1.5 + Math.sin(time * 1.5 + 1) * 0.2;
-      
-      // Animate steam
-      steamParticles.forEach((p, i) => {
-        p.position.y += p.userData.speed;
-        p.position.x = 3 + Math.sin(time * 2 + p.userData.offset) * 0.15;
-        p.material.opacity = 0.6 - ((p.position.y - 5.3) * 0.4);
-        if (p.position.y > 6.5) {
-          p.position.y = 5.3;
-          p.position.x = 3 + (Math.random() - 0.5) * 0.2;
+
+      // Signpost signs wave
+      signs.forEach((s, i) => {
+        s.rotation.z = Math.sin(time * 1.2 + i * 0.5) * 0.08;
+      });
+
+      // Neon sign glow
+      signGlow.intensity = 3 + Math.sin(time * 3.5) * 0.8;
+      signBorderOuter.material.color.setHSL(0.45 + Math.sin(time * 0.5) * 0.05, 1, 0.55);
+
+      // Cup icon float
+      cupIconG.position.y = 5.8 + Math.sin(time * 1.2) * 0.08;
+      cupIconG.rotation.y = Math.sin(time * 0.8) * 0.2;
+
+      // Steam animation
+      steamParts.forEach(s => {
+        s.position.y += s.userData.spd;
+        s.position.x = 3.5 + Math.sin(time * 3 + s.userData.off) * 0.12;
+        s.material.opacity = 0.7 - (s.position.y - s.userData.startY) * 0.5;
+        s.scale.setScalar(1 + (s.position.y - s.userData.startY) * 0.3);
+        if (s.position.y > 7) {
+          s.position.y = s.userData.startY;
+          s.position.x = 3.5 + (Math.random() - 0.5) * 0.2;
+          s.scale.setScalar(1);
         }
       });
-      
-      // Animate floating particles
-      particles.forEach((p, i) => {
-        p.position.y += p.userData.speed;
-        p.position.x += Math.sin(time + p.userData.offset) * 0.005;
-        if (p.position.y > 12) {
-          p.position.y = -1;
-          p.position.x = (Math.random() - 0.5) * 25;
-          p.position.z = (Math.random() - 0.5) * 25;
+
+      // Lamp glow
+      lamps.forEach((l, i) => {
+        l.light.intensity = 2 + Math.sin(time * 1.8 + i * 1.5) * 0.4;
+        l.bulb.material.color.setHSL(0.12, 0.3, 0.85 + Math.sin(time * 1.8 + i * 1.5) * 0.1);
+      });
+
+      // Floating particles
+      particles.forEach(p => {
+        p.position.y += p.userData.spd;
+        p.position.x += Math.sin(time * 0.5 + p.userData.off) * 0.003;
+        p.position.z += Math.cos(time * 0.5 + p.userData.off) * 0.003;
+        if (p.position.y > 16) {
+          p.position.y = -2;
+          p.position.x = (Math.random() - 0.5) * 35;
+          p.position.z = (Math.random() - 0.5) * 35;
         }
       });
-      
-      // Subtle light color shifts
-      pinkLight.intensity = 1.2 + Math.sin(time * 0.8) * 0.3;
-      cyanLight.intensity = 0.8 + Math.sin(time * 0.6 + 1) * 0.2;
-      
+
+      // Ambient light color shift
+      pinkLight.intensity = 1.5 + Math.sin(time * 0.7) * 0.4;
+      cyanLight.intensity = 1.2 + Math.sin(time * 0.5 + 1.5) * 0.3;
+      warmLight.intensity = 2 + Math.sin(time * 1.2) * 0.3;
+
+      // Espresso machine gauge
+      gaugeGlass.material.color.setHSL(0.3 + Math.sin(time * 2) * 0.1, 1, 0.5);
+
       renderer.render(scene, camera);
     };
-    
+
     animate();
-    
-    // Resize handler
+
+    // Resize
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
