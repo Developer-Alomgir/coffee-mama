@@ -6,103 +6,316 @@
   <title>Coffee Mama</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
-    #c { width: 100vw; height: 100vh; display: block; cursor: grab; }
-    #c:active { cursor: grabbing; }
-    .ui {
+    body { overflow: hidden; background: #050510; font-family: 'Segoe UI', sans-serif; }
+    #c { width: 100vw; height: 100vh; display: block; }
+    
+    .billboard-overlay {
       position: fixed;
-      top: 25px;
-      left: 50%;
-      transform: translateX(-50%);
-      text-align: center;
       pointer-events: none;
-      z-index: 10;
+      z-index: 100;
     }
-    .ui h1 {
-      font-size: 38px;
-      font-weight: 800;
-      color: #00ffa3;
-      text-shadow: 0 0 15px #00ffa3, 0 0 30px #00ffa3, 0 0 60px #00ffa3, 0 0 100px rgba(0,255,163,0.5);
-      letter-spacing: 6px;
-      animation: titleGlow 3s ease-in-out infinite;
+    
+    .billboard-card {
+      position: absolute;
+      width: 180px;
+      background: linear-gradient(145deg, rgba(20,20,35,0.95), rgba(10,10,20,0.98));
+      border-radius: 12px;
+      overflow: hidden;
+      pointer-events: auto;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     }
-    .ui p {
-      color: #e0b0ff;
+    
+    .billboard-card:hover {
+      transform: scale(1.08) translateY(-5px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    }
+    
+    .billboard-card.pink { border: 2px solid #ff1493; }
+    .billboard-card.pink:hover { box-shadow: 0 20px 60px rgba(255,20,147,0.4); }
+    
+    .billboard-card.cyan { border: 2px solid #00ced1; }
+    .billboard-card.cyan:hover { box-shadow: 0 20px 60px rgba(0,206,209,0.4); }
+    
+    .billboard-card.green { border: 2px solid #32cd32; }
+    .billboard-card.green:hover { box-shadow: 0 20px 60px rgba(50,205,50,0.4); }
+    
+    .billboard-card.orange { border: 2px solid #ffa500; }
+    .billboard-card.orange:hover { box-shadow: 0 20px 60px rgba(255,165,0,0.4); }
+    
+    .card-image {
+      width: 100%;
+      height: 90px;
+      object-fit: cover;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .card-content {
+      padding: 12px;
+    }
+    
+    .card-title {
       font-size: 14px;
-      margin-top: 8px;
-      letter-spacing: 2px;
-      text-shadow: 0 0 10px #e0b0ff;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
     }
-    @keyframes titleGlow {
-      0%, 100% { filter: brightness(1) drop-shadow(0 0 20px #00ffa3); }
-      50% { filter: brightness(1.3) drop-shadow(0 0 40px #00ffa3); }
+    
+    .pink .card-title { color: #ff1493; }
+    .cyan .card-title { color: #00ced1; }
+    .green .card-title { color: #32cd32; }
+    .orange .card-title { color: #ffa500; }
+    
+    .card-desc {
+      font-size: 11px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.4;
+      margin-bottom: 8px;
     }
+    
+    .card-link {
+      font-size: 10px;
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.3s;
+    }
+    
+    .card-link:hover { color: #fff; }
+    
+    .card-link svg {
+      width: 12px;
+      height: 12px;
+    }
+    
+    #card1 { left: 8%; top: 25%; }
+    #card2 { left: 8%; top: 55%; }
+    #card3 { right: 8%; top: 25%; }
+    #card4 { right: 8%; top: 55%; }
+    
     .hint {
       position: fixed;
-      bottom: 25px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      color: rgba(255,255,255,0.4);
-      font-size: 13px;
-      pointer-events: none;
+      color: rgba(255,255,255,0.35);
+      font-size: 12px;
       z-index: 10;
+    }
+
+    @media (max-width: 900px) {
+      .billboard-card { width: 140px; }
+      .card-image { height: 70px; }
+      .card-content { padding: 8px; }
+      .card-title { font-size: 12px; }
+      .card-desc { font-size: 10px; }
+      #card1 { left: 3%; top: 15%; }
+      #card2 { left: 3%; top: 45%; }
+      #card3 { right: 3%; top: 15%; }
+      #card4 { right: 3%; top: 45%; }
     }
   </style>
 </head>
 <body>
-  <div class="ui">
-    <h1>COFFEE MAMA</h1>
-    <p>☕ Crafted for coffee Lovers</p>
+  <div class="billboard-overlay">
+    <a href="#projects" class="billboard-card pink" id="card1">
+      <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=300&h=200&fit=crop" class="card-image" alt="Projects">
+      <div class="card-content">
+        <div class="card-title">PROJECTS</div>
+        <div class="card-desc">Explore our creative portfolio and latest works</div>
+        <span class="card-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          View Projects
+        </span>
+      </div>
+    </a>
+    
+    <a href="#menu" class="billboard-card cyan" id="card2">
+      <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300&h=200&fit=crop" class="card-image" alt="Menu">
+      <div class="card-content">
+        <div class="card-title">MENU</div>
+        <div class="card-desc">Discover our specialty coffee and treats</div>
+        <span class="card-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          View Menu
+        </span>
+      </div>
+    </a>
+    
+    <a href="#about" class="billboard-card green" id="card3">
+      <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=200&fit=crop" class="card-image" alt="About">
+      <div class="card-content">
+        <div class="card-title">ABOUT US</div>
+        <div class="card-desc">Meet our team and learn our story</div>
+        <span class="card-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          Learn More
+        </span>
+      </div>
+    </a>
+    
+    <a href="#contact" class="billboard-card orange" id="card4">
+      <img src="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=300&h=200&fit=crop" class="card-image" alt="Contact">
+      <div class="card-content">
+        <div class="card-title">CONTACT</div>
+        <div class="card-desc">Get in touch with us today</div>
+        <span class="card-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          Contact Us
+        </span>
+      </div>
+    </a>
   </div>
-  <div class="hint">Development by:: AlomgiR HosseN</div>
+  
+  <div class="hint">Scroll to zoom • Drag to pan • Arrow keys to move • Auto-animates after 4s</div>
   <canvas id="c"></canvas>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
     const canvas = document.getElementById('c');
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
-    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMappingExposure = 1.2;
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x050510);
-    scene.fog = new THREE.FogExp2(0x050510, 0.025);
+    scene.fog = new THREE.FogExp2(0x050510, 0.02);
 
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 500);
+    // Front camera with smooth animations
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 500);
+    camera.position.set(0, 4, 16);
+    camera.lookAt(0, 2.5, 0);
+
+    // Camera animation state
+    const camState = {
+      targetZ: 16,
+      targetX: 0,
+      targetY: 4,
+      currentZ: 16,
+      currentX: 0,
+      currentY: 4,
+      autoAnimate: true,
+      animPhase: 0
+    };
+
+    // Scroll to zoom
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      camState.targetZ += e.deltaY * 0.015;
+      camState.targetZ = Math.max(8, Math.min(25, camState.targetZ));
+      camState.autoAnimate = false;
+      clearTimeout(camState.autoTimer);
+      camState.autoTimer = setTimeout(() => { camState.autoAnimate = true; }, 4000);
+    }, { passive: false });
+
+    // Keyboard controls
+    document.addEventListener('keydown', (e) => {
+      camState.autoAnimate = false;
+      clearTimeout(camState.autoTimer);
+      camState.autoTimer = setTimeout(() => { camState.autoAnimate = true; }, 4000);
+      
+      switch(e.key) {
+        case 'ArrowLeft': case 'a': case 'A':
+          camState.targetX -= 1;
+          camState.targetX = Math.max(-8, camState.targetX);
+          break;
+        case 'ArrowRight': case 'd': case 'D':
+          camState.targetX += 1;
+          camState.targetX = Math.min(8, camState.targetX);
+          break;
+        case 'ArrowUp': case 'w': case 'W':
+          camState.targetZ -= 1;
+          camState.targetZ = Math.max(8, camState.targetZ);
+          break;
+        case 'ArrowDown': case 's': case 'S':
+          camState.targetZ += 1;
+          camState.targetZ = Math.min(25, camState.targetZ);
+          break;
+      }
+    });
+
+    // Touch/Mouse drag for left-right
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
     
-    // Lights
-    const ambient = new THREE.AmbientLight(0x6040a0, 0.5);
-    scene.add(ambient);
+    canvas.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      dragStart = { x: e.clientX, y: e.clientY };
+      camState.autoAnimate = false;
+    });
+    
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - dragStart.x;
+      const dy = e.clientY - dragStart.y;
+      camState.targetX -= dx * 0.02;
+      camState.targetX = Math.max(-8, Math.min(8, camState.targetX));
+      camState.targetY -= dy * 0.01;
+      camState.targetY = Math.max(2, Math.min(8, camState.targetY));
+      dragStart = { x: e.clientX, y: e.clientY };
+    });
+    
+    canvas.addEventListener('mouseup', () => {
+      isDragging = false;
+      clearTimeout(camState.autoTimer);
+      camState.autoTimer = setTimeout(() => { camState.autoAnimate = true; }, 4000);
+    });
+    
+    canvas.addEventListener('mouseleave', () => {
+      isDragging = false;
+    });
 
-    const mainLight = new THREE.DirectionalLight(0xffeedd, 0.8);
-    mainLight.position.set(5, 10, 5);
+    // Touch support
+    canvas.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      dragStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      camState.autoAnimate = false;
+    }, { passive: true });
+    
+    canvas.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      const dx = e.touches[0].clientX - dragStart.x;
+      const dy = e.touches[0].clientY - dragStart.y;
+      camState.targetX -= dx * 0.025;
+      camState.targetX = Math.max(-8, Math.min(8, camState.targetX));
+      camState.targetY -= dy * 0.015;
+      camState.targetY = Math.max(2, Math.min(8, camState.targetY));
+      dragStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }, { passive: true });
+    
+    canvas.addEventListener('touchend', () => {
+      isDragging = false;
+      clearTimeout(camState.autoTimer);
+      camState.autoTimer = setTimeout(() => { camState.autoAnimate = true; }, 4000);
+    });
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0x6040a0, 0.6));
+
+    const mainLight = new THREE.DirectionalLight(0xffeedd, 0.9);
+    mainLight.position.set(5, 12, 8);
     mainLight.castShadow = true;
     mainLight.shadow.mapSize.width = 2048;
     mainLight.shadow.mapSize.height = 2048;
-    mainLight.shadow.camera.near = 0.5;
-    mainLight.shadow.camera.far = 50;
-    mainLight.shadow.camera.left = -15;
-    mainLight.shadow.camera.right = 15;
-    mainLight.shadow.camera.top = 15;
-    mainLight.shadow.camera.bottom = -15;
-    mainLight.shadow.bias = -0.0001;
     scene.add(mainLight);
 
-    const pinkLight = new THREE.PointLight(0xff1493, 1.5, 20);
-    pinkLight.position.set(-7, 5, 5);
+    const pinkLight = new THREE.PointLight(0xff1493, 1.5, 25);
+    pinkLight.position.set(-8, 5, 6);
     scene.add(pinkLight);
 
-    const cyanLight = new THREE.PointLight(0x00ffff, 1.2, 20);
-    cyanLight.position.set(7, 5, -5);
+    const cyanLight = new THREE.PointLight(0x00ffff, 1.2, 25);
+    cyanLight.position.set(8, 5, 6);
     scene.add(cyanLight);
 
-    const warmLight = new THREE.PointLight(0xffaa44, 2, 12);
-    warmLight.position.set(0, 3, 2);
+    const warmLight = new THREE.PointLight(0xffaa44, 2.5, 15);
+    warmLight.position.set(0, 3, 4);
     scene.add(warmLight);
 
     // Helpers
@@ -128,131 +341,158 @@
 
     // Ground
     const ground = new THREE.Mesh(
-      new THREE.CircleGeometry(25, 64),
+      new THREE.PlaneGeometry(60, 60),
       new THREE.MeshStandardMaterial({ color: 0x1a0a25, roughness: 0.95 })
     );
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // Glow rings
+    // Ground glow
     for (let i = 0; i < 3; i++) {
       const ring = new THREE.Mesh(
-        new THREE.RingGeometry(6 + i * 4, 7 + i * 4, 64),
-        new THREE.MeshBasicMaterial({ color: i % 2 ? 0x4a1a6b : 0x2a0a4b, transparent: true, opacity: 0.2, side: THREE.DoubleSide })
+        new THREE.RingGeometry(7 + i * 5, 8 + i * 5, 64),
+        new THREE.MeshBasicMaterial({ color: i % 2 ? 0x4a1a6b : 0x2a0a4b, transparent: true, opacity: 0.15, side: THREE.DoubleSide })
       );
       ring.rotation.x = -Math.PI / 2;
-      ring.position.y = 0.01 + i * 0.005;
+      ring.position.y = 0.01;
       scene.add(ring);
     }
 
-    // Shop Group
+    // Shop
     const shop = new THREE.Group();
 
     // Walls
-    const backWall = box(7, 4.5, 0.3, 0x5d3a1a);
-    backWall.position.set(0, 2.25, -2.5);
+    const backWall = box(8, 5, 0.3, 0x5d3a1a);
+    backWall.position.set(0, 2.5, -2.5);
     shop.add(backWall);
 
-    const leftWall = box(0.3, 4.5, 5, 0x4a2d15);
-    leftWall.position.set(-3.5, 2.25, 0);
+    const leftWall = box(0.3, 5, 5.5, 0x4a2d15);
+    leftWall.position.set(-4, 2.5, 0);
     shop.add(leftWall);
 
-    const rightWall = box(0.3, 4.5, 5, 0x4a2d15);
-    rightWall.position.set(3.5, 2.25, 0);
+    const rightWall = box(0.3, 5, 5.5, 0x4a2d15);
+    rightWall.position.set(4, 2.5, 0);
     shop.add(rightWall);
 
-    // Floor
-    const floor = box(7, 0.2, 5, 0x2d1810);
+    const floor = box(8, 0.2, 5.5, 0x2d1810);
     floor.position.set(0, 0.1, 0);
     shop.add(floor);
 
     // Counter
-    const counterTop = box(5.5, 0.18, 1.2, 0xdeb887, { r: 0.35 });
-    counterTop.position.set(0, 1.3, 2);
+    const counterTop = box(6, 0.2, 1.4, 0xdeb887, { r: 0.3 });
+    counterTop.position.set(0, 1.4, 2.2);
     shop.add(counterTop);
 
-    const counterBody = box(5.5, 1.3, 1.1, 0xb8733d);
-    counterBody.position.set(0, 0.65, 2);
+    const counterBody = box(6, 1.4, 1.3, 0xb8733d);
+    counterBody.position.set(0, 0.7, 2.2);
     shop.add(counterBody);
 
-    const counterTrim = box(5.6, 0.08, 0.1, 0x8b5a2b);
-    counterTrim.position.set(0, 1.2, 2.55);
-    shop.add(counterTrim);
-
     // Roof
-    const roof = box(8, 0.5, 6.5, 0x9932cc, { e: 0x6b238e, ei: 0.5, m: 0.4, r: 0.25 });
-    roof.position.set(0, 4.75, 0);
+    const roof = box(9, 0.5, 7, 0x9932cc, { e: 0x6b238e, ei: 0.5, m: 0.4, r: 0.2 });
+    roof.position.set(0, 5.25, 0);
     shop.add(roof);
 
-    const overhang = box(7.5, 0.25, 2.2, 0x8b008b, { e: 0x5a005a, ei: 0.4 });
-    overhang.position.set(0, 4.4, 3);
+    const overhang = box(8.5, 0.3, 2.5, 0x8b008b, { e: 0x5a005a, ei: 0.4 });
+    overhang.position.set(0, 4.85, 3.5);
     shop.add(overhang);
 
-    // Neon trim
-    const neonTrim = new THREE.Mesh(
-      new THREE.BoxGeometry(7.8, 0.06, 0.06),
-      new THREE.MeshBasicMaterial({ color: 0xff00ff })
-    );
-    neonTrim.position.set(0, 4.25, 4);
-    shop.add(neonTrim);
-
-    // Shelves
-    for (let i = 0; i < 3; i++) {
-      const shelf = box(2.5, 0.1, 0.4, 0x8b5a2b);
-      shelf.position.set(-1.8, 1.8 + i * 0.9, -2.2);
-      shop.add(shelf);
+    // Neon trims
+    const neonColors = [0xff00ff, 0x00ffff];
+    for (let i = 0; i < 2; i++) {
+      const trim = new THREE.Mesh(
+        new THREE.BoxGeometry(8.8, 0.06, 0.06),
+        new THREE.MeshBasicMaterial({ color: neonColors[i] })
+      );
+      trim.position.set(0, 4.65 - i * 0.12, 4.7);
+      shop.add(trim);
     }
 
     scene.add(shop);
 
-    // Neon Sign
-    const signG = new THREE.Group();
-    const signBack = box(5, 1.2, 0.2, 0x0a0a15);
-    signG.add(signBack);
+    // Main Sign with "Coffee Mama" text
+    const signGroup = new THREE.Group();
 
-    const signBorderMat = new THREE.MeshBasicMaterial({ color: 0x00ffa3 });
-    const signBorderOuter = new THREE.Mesh(new THREE.BoxGeometry(5.15, 1.35, 0.15), signBorderMat);
-    signBorderOuter.position.z = 0.08;
-    signG.add(signBorderOuter);
+    const signBack = box(6, 1.5, 0.25, 0x0a0a18);
+    signGroup.add(signBack);
 
-    const signInner = box(4.9, 1.1, 0.18, 0x050510);
-    signInner.position.z = 0.1;
-    signG.add(signInner);
+    const signBorder = new THREE.Mesh(
+      new THREE.BoxGeometry(6.2, 1.7, 0.2),
+      new THREE.MeshBasicMaterial({ color: 0x00ffa3 })
+    );
+    signBorder.position.z = 0.1;
+    signGroup.add(signBorder);
 
-    const signGlow = new THREE.PointLight(0x00ffa3, 3, 10);
-    signGlow.position.set(0, 0, 1.5);
-    signG.add(signGlow);
+    const signInner = box(5.9, 1.4, 0.22, 0x080812);
+    signInner.position.z = 0.12;
+    signGroup.add(signInner);
 
-    signG.position.set(0, 5.8, 3);
-    scene.add(signG);
+    // Create "Coffee Mama" text using canvas texture
+    const createTextTexture = (text, fontSize, color, bgColor) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+      
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      // Glow effect
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = color;
+      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+      
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.needsUpdate = true;
+      return texture;
+    };
+
+    const textTexture = createTextTexture('COFFEE MAMA', 64, '#00ffa3', '#080812');
+    const textPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(5.5, 1.2),
+      new THREE.MeshBasicMaterial({ map: textTexture, transparent: true })
+    );
+    textPlane.position.z = 0.25;
+    signGroup.add(textPlane);
+
+    const signGlow = new THREE.PointLight(0x00ffa3, 3, 12);
+    signGlow.position.set(0, 0, 2);
+    signGroup.add(signGlow);
+
+    signGroup.position.set(0, 6.5, 3.5);
+    scene.add(signGroup);
 
     // Coffee cup icon
-    const cupIconG = new THREE.Group();
-    const cupBody = cyl(0.3, 0.22, 0.6, 0xffffff, 20, { r: 0.25 });
-    cupIconG.add(cupBody);
-    
+    const cupIcon = new THREE.Group();
+    const cupBody = cyl(0.35, 0.28, 0.7, 0xffffff, 20, { r: 0.2 });
+    cupIcon.add(cupBody);
+
     const cupHandle = new THREE.Mesh(
-      new THREE.TorusGeometry(0.15, 0.04, 8, 20, Math.PI),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.25 })
+      new THREE.TorusGeometry(0.18, 0.05, 8, 20, Math.PI),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 })
     );
-    cupHandle.rotation.z = Math.PI / 2;
-    cupHandle.rotation.y = Math.PI / 2;
-    cupHandle.position.set(0.35, 0, 0);
-    cupIconG.add(cupHandle);
+    cupHandle.rotation.set(0, Math.PI / 2, Math.PI / 2);
+    cupHandle.position.set(0.4, 0, 0);
+    cupIcon.add(cupHandle);
 
-    cupIconG.position.set(3.5, 5.8, 3.3);
-    scene.add(cupIconG);
+    cupIcon.position.set(4.2, 6.5, 3.8);
+    scene.add(cupIcon);
 
-    // Steam from icon
+    // Steam
     const steamParts = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 15; i++) {
       const s = new THREE.Mesh(
-        new THREE.SphereGeometry(0.06, 8, 8),
-        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.7 })
+        new THREE.SphereGeometry(0.07, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 })
       );
-      s.position.set(3.5, 6.2 + Math.random() * 0.5, 3.3);
-      s.userData = { spd: 0.008 + Math.random() * 0.012, off: Math.random() * Math.PI * 2, startY: 6.2 };
+      s.position.set(4.2, 7 + Math.random() * 0.6, 3.8);
+      s.userData = { spd: 0.006 + Math.random() * 0.01, off: Math.random() * Math.PI * 2, startY: 7 };
       scene.add(s);
       steamParts.push(s);
     }
@@ -260,339 +500,186 @@
     // Shopkeeper
     const keeper = new THREE.Group();
 
-    // Body
-    const torso = cyl(0.35, 0.3, 1, 0x2d5a27, 12);
-    torso.position.y = 1.2;
+    const torso = cyl(0.4, 0.35, 1.1, 0x2d5a27, 12);
+    torso.position.y = 1.3;
     keeper.add(torso);
 
-    // Apron
-    const apron = box(0.55, 0.7, 0.15, 0xf5deb3);
-    apron.position.set(0, 1, 0.2);
+    const apron = box(0.65, 0.8, 0.18, 0xf5deb3);
+    apron.position.set(0, 1.1, 0.25);
     keeper.add(apron);
 
-    // Head
     const head = new THREE.Mesh(
-      new THREE.SphereGeometry(0.28, 16, 16),
+      new THREE.SphereGeometry(0.32, 16, 16),
       new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.8 })
     );
-    head.position.y = 2;
+    head.position.y = 2.15;
     keeper.add(head);
 
-    // Hair
     const hair = new THREE.Mesh(
-      new THREE.SphereGeometry(0.3, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2),
+      new THREE.SphereGeometry(0.34, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2),
       new THREE.MeshStandardMaterial({ color: 0x3d2314, roughness: 0.9 })
     );
-    hair.position.y = 2.05;
+    hair.position.y = 2.2;
     keeper.add(hair);
 
-    // Eyes
-    const eyeGeo = new THREE.SphereGeometry(0.04, 8, 8);
+    // Hat
+    const hat = cyl(0.38, 0.35, 0.2, 0x8b4513, 12);
+    hat.position.y = 2.5;
+    keeper.add(hat);
+
+    const hatTop = cyl(0.28, 0.3, 0.25, 0x8b4513, 12);
+    hatTop.position.y = 2.7;
+    keeper.add(hatTop);
+
+    const eyeGeo = new THREE.SphereGeometry(0.05, 8, 8);
     const eyeMat = new THREE.MeshBasicMaterial({ color: 0x222222 });
     const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
-    leftEye.position.set(-0.1, 2.02, 0.24);
+    leftEye.position.set(-0.12, 2.18, 0.28);
     keeper.add(leftEye);
     const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
-    rightEye.position.set(0.1, 2.02, 0.24);
+    rightEye.position.set(0.12, 2.18, 0.28);
     keeper.add(rightEye);
 
-    // Smile
     const smile = new THREE.Mesh(
-      new THREE.TorusGeometry(0.08, 0.02, 8, 12, Math.PI),
+      new THREE.TorusGeometry(0.1, 0.025, 8, 12, Math.PI),
       new THREE.MeshBasicMaterial({ color: 0xcc6666 })
     );
     smile.rotation.x = Math.PI;
     smile.rotation.z = Math.PI;
-    smile.position.set(0, 1.92, 0.25);
+    smile.position.set(0, 2.05, 0.28);
     keeper.add(smile);
 
-    // Arms
     const armMat = new THREE.MeshStandardMaterial({ color: 0x2d5a27, roughness: 0.7 });
-    const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.07, 0.6, 8), armMat);
-    leftArm.position.set(-0.4, 1.1, 0);
-    leftArm.rotation.z = 0.4;
+    const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.08, 0.7, 8), armMat);
+    leftArm.position.set(-0.45, 1.2, 0);
+    leftArm.rotation.z = 0.5;
     keeper.add(leftArm);
 
-    const rightArm = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.07, 0.6, 8), armMat);
-    rightArm.position.set(0.4, 1.1, 0);
-    rightArm.rotation.z = -0.4;
+    const rightArm = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.08, 0.7, 8), armMat);
+    rightArm.position.set(0.45, 1.2, 0);
+    rightArm.rotation.z = -0.5;
     keeper.add(rightArm);
 
-    // Hands
     const handMat = new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.8 });
-    const leftHand = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), handMat);
-    leftHand.position.set(-0.55, 0.85, 0.1);
+    const leftHand = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), handMat);
+    leftHand.position.set(-0.65, 0.9, 0.15);
     keeper.add(leftHand);
 
-    const rightHand = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), handMat);
-    rightHand.position.set(0.55, 0.85, 0.1);
+    const rightHand = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), handMat);
+    rightHand.position.set(0.65, 0.9, 0.15);
     keeper.add(rightHand);
 
-    // Legs
-    const legMat = new THREE.MeshStandardMaterial({ color: 0x1a1a3a, roughness: 0.8 });
-    const leftLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.7, 8), legMat);
-    leftLeg.position.set(-0.15, 0.35, 0);
-    keeper.add(leftLeg);
-
-    const rightLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.7, 8), legMat);
-    rightLeg.position.set(0.15, 0.35, 0);
-    keeper.add(rightLeg);
-
-    keeper.position.set(0, 0, 1);
+    keeper.position.set(0, 0.5, 1.2);
     scene.add(keeper);
 
     // Coffee cups on counter
     const cups = [];
     const createCup = (x, z, col) => {
       const g = new THREE.Group();
-      const c = cyl(0.18, 0.14, 0.42, col, 16, { r: 0.3 });
-      c.position.y = 0.21;
+      const c = cyl(0.18, 0.14, 0.4, col, 16, { r: 0.3 });
+      c.position.y = 0.2;
       g.add(c);
-      
-      const cof = cyl(0.15, 0.15, 0.1, 0x3d1f0d, 16);
-      cof.position.y = 0.38;
+      const cof = cyl(0.15, 0.15, 0.08, 0x3d1f0d, 16);
+      cof.position.y = 0.36;
       g.add(cof);
-      
-      const h = new THREE.Mesh(
-        new THREE.TorusGeometry(0.1, 0.025, 8, 16, Math.PI),
-        new THREE.MeshStandardMaterial({ color: col, roughness: 0.3 })
-      );
-      h.rotation.set(0, Math.PI / 2, Math.PI / 2);
-      h.position.set(0.2, 0.21, 0);
-      g.add(h);
-      
-      g.position.set(x, 1.4, z);
-      g.userData = { baseY: 1.4, phase: Math.random() * Math.PI * 2 };
+      g.position.set(x, 1.5, z);
+      g.userData = { baseY: 1.5, phase: Math.random() * Math.PI * 2 };
       return g;
     };
 
-    const cupColors = [0xffffff, 0xff6b6b, 0x87ceeb, 0xffd700, 0x98fb98];
-    const cupPositions = [[-1.8, 1.8], [-0.9, 1.9], [0, 1.8], [0.9, 1.9], [1.8, 1.8]];
-    cupPositions.forEach((p, i) => {
-      const cup = createCup(p[0], p[1], cupColors[i]);
+    const cupCols = [0xffffff, 0xff6b6b, 0x87ceeb, 0xffd700];
+    [[-2, 2], [-0.7, 2.1], [0.7, 2.1], [2, 2]].forEach((p, i) => {
+      const cup = createCup(p[0], p[1], cupCols[i]);
       scene.add(cup);
       cups.push(cup);
     });
 
     // Espresso Machine
-    const machineG = new THREE.Group();
-    const mBody = box(1, 1.2, 0.7, 0xc0c0c0, { m: 0.85, r: 0.15 });
-    mBody.position.y = 0.6;
-    machineG.add(mBody);
+    const machine = new THREE.Group();
+    const mBody = box(1, 1.3, 0.8, 0xc0c0c0, { m: 0.85, r: 0.15 });
+    mBody.position.y = 0.65;
+    machine.add(mBody);
 
-    const mTop = box(1.05, 0.15, 0.75, 0x8b0000);
-    mTop.position.y = 1.25;
-    machineG.add(mTop);
+    const mTop = box(1.05, 0.18, 0.85, 0x8b0000);
+    mTop.position.y = 1.4;
+    machine.add(mTop);
 
-    const gauge = cyl(0.1, 0.1, 0.06, 0x222222, 16);
-    gauge.rotation.x = Math.PI / 2;
-    gauge.position.set(0, 0.8, 0.38);
-    machineG.add(gauge);
-
-    const gaugeGlass = new THREE.Mesh(
-      new THREE.CircleGeometry(0.08, 16),
+    const gauge = new THREE.Mesh(
+      new THREE.CircleGeometry(0.12, 16),
       new THREE.MeshBasicMaterial({ color: 0x44ff44 })
     );
-    gaugeGlass.position.set(0, 0.8, 0.42);
-    machineG.add(gaugeGlass);
+    gauge.position.set(0, 0.9, 0.42);
+    machine.add(gauge);
 
-    machineG.position.set(-2.2, 1.4, 1.6);
-    scene.add(machineG);
+    machine.position.set(-2.3, 1.5, 1.5);
+    scene.add(machine);
 
     // Stools
     const stools = [];
     const createStool = (x, z) => {
       const g = new THREE.Group();
-      const seat = cyl(0.38, 0.32, 0.14, 0xcd853f, 16, { r: 0.45 });
-      seat.position.y = 0.82;
+      const seat = cyl(0.4, 0.35, 0.15, 0xcd853f, 16, { r: 0.4 });
+      seat.position.y = 0.9;
       g.add(seat);
-      
-      const leg = cyl(0.07, 0.1, 0.82, 0x3a2510, 8);
-      leg.position.y = 0.41;
+      const leg = cyl(0.08, 0.12, 0.9, 0x3a2510, 8);
+      leg.position.y = 0.45;
       g.add(leg);
-      
-      const base = cyl(0.28, 0.28, 0.06, 0x2a1a0a, 16);
-      base.position.y = 0.03;
-      g.add(base);
-      
       g.position.set(x, 0, z);
-      g.userData = { baseY: 0 };
       return g;
     };
 
-    [[-1.5, 3.5], [0, 3.8], [1.5, 3.5]].forEach(p => {
+    [[-1.8, 4], [0, 4.3], [1.8, 4]].forEach(p => {
       const stool = createStool(p[0], p[1]);
       scene.add(stool);
       stools.push(stool);
     });
 
-    // Billboards
-    const billboards = [];
-    const createBillboard = (color, pos, rotY) => {
-      const g = new THREE.Group();
-      
-      const post = cyl(0.1, 0.14, pos.h, 0x2a2a2a, 8, { m: 0.6 });
-      post.position.y = pos.h / 2;
-      g.add(post);
-      
-      const frame = box(2.4, 1.4, 0.25, 0x151515, { m: 0.5 });
-      frame.position.y = pos.h + 0.7;
-      g.add(frame);
-      
-      const face = new THREE.Mesh(
-        new THREE.BoxGeometry(2.2, 1.2, 0.2),
-        new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.7, roughness: 0.15, metalness: 0.4 })
-      );
-      face.position.set(0, pos.h + 0.7, 0.12);
-      g.add(face);
-      
-      const borderMat = new THREE.MeshBasicMaterial({ color });
-      [[0, 1.25, 0.13], [0, -1.25, 0.13]].forEach((p, i) => {
-        const b = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.06, 0.22), borderMat);
-        b.position.set(p[0], pos.h + 0.7 + (i === 0 ? 0.55 : -0.55), p[2]);
-        g.add(b);
-      });
-      
-      const light = new THREE.PointLight(color, 1, 6);
-      light.position.set(0, pos.h + 0.7, 1.2);
-      g.add(light);
-      
-      g.position.set(pos.x, 0, pos.z);
-      g.rotation.y = rotY;
-      
-      return { g, face, light };
-    };
-
-    const bbData = [
-      { color: 0xff1493, pos: { x: -6, h: 2.2, z: 5 }, rot: 0.5 },
-      { color: 0x00ced1, pos: { x: -7, h: 2, z: -1 }, rot: 1.1 },
-      { color: 0x32cd32, pos: { x: -5.5, h: 2.4, z: -5 }, rot: 1.6 },
-      { color: 0xffa500, pos: { x: 6, h: 2.2, z: 4 }, rot: -0.5 }
-    ];
-
-    bbData.forEach(d => {
-      const bb = createBillboard(d.color, d.pos, d.rot);
-      scene.add(bb.g);
-      billboards.push(bb);
-    });
-
-    // Signpost
-    const signpostG = new THREE.Group();
-    const mainPost = cyl(0.12, 0.16, 5.5, 0x252525, 8, { m: 0.6 });
-    mainPost.position.y = 2.75;
-    signpostG.add(mainPost);
-
-    const signColors = [0xff69b4, 0x40e0d0, 0x98fb98, 0xffd700];
-    const signYs = [5, 4.3, 3.6, 2.9];
-    const signs = [];
-    signColors.forEach((col, i) => {
-      const s = box(2, 0.5, 0.14, col, { e: col, ei: 0.5 });
-      s.position.set(1.1, signYs[i], 0);
-      s.rotation.y = (i % 2 ? -0.12 : 0.12);
-      signpostG.add(s);
-      signs.push(s);
-    });
-
-    signpostG.position.set(6, 0, -4);
-    scene.add(signpostG);
-
     // Street Lamps
     const lamps = [];
     const createLamp = (x, z, dir = 1) => {
       const g = new THREE.Group();
-      
-      const pole = cyl(0.1, 0.14, 5.5, 0x3d2a5a, 8, { m: 0.45 });
-      pole.position.y = 2.75;
+      const pole = cyl(0.12, 0.16, 6, 0x3d2a5a, 8, { m: 0.4 });
+      pole.position.y = 3;
       g.add(pole);
-      
-      const arm = box(1.8, 0.12, 0.12, 0x3d2a5a);
-      arm.position.set(0.9 * dir, 5.3, 0);
+
+      const arm = box(2, 0.12, 0.12, 0x3d2a5a);
+      arm.position.set(dir, 5.8, 0);
       g.add(arm);
-      
+
       const bulb = new THREE.Mesh(
-        new THREE.SphereGeometry(0.4, 20, 20),
+        new THREE.SphereGeometry(0.45, 20, 20),
         new THREE.MeshBasicMaterial({ color: 0xfffacd })
       );
-      bulb.position.set(1.7 * dir, 5, 0);
+      bulb.position.set(dir * 1.9, 5.5, 0);
       g.add(bulb);
-      
-      const light = new THREE.PointLight(0xffd700, 2, 12);
-      light.position.set(1.7 * dir, 5, 0);
+
+      const light = new THREE.PointLight(0xffd700, 2.5, 15);
+      light.position.set(dir * 1.9, 5.5, 0);
       light.castShadow = true;
       g.add(light);
-      
+
       g.position.set(x, 0, z);
       return { g, light, bulb };
     };
 
-    const lamp1 = createLamp(-5, 6, 1);
-    const lamp2 = createLamp(5, 6, -1);
+    const lamp1 = createLamp(-6, 5, 1);
+    const lamp2 = createLamp(6, 5, -1);
     scene.add(lamp1.g);
     scene.add(lamp2.g);
     lamps.push(lamp1, lamp2);
 
-    // Floating particles
+    // Particles
     const particles = [];
-    for (let i = 0; i < 80; i++) {
+    for (let i = 0; i < 60; i++) {
       const p = new THREE.Mesh(
         new THREE.SphereGeometry(0.04, 6, 6),
-        new THREE.MeshBasicMaterial({ color: Math.random() > 0.5 ? 0xff69b4 : 0x00ffff, transparent: true, opacity: 0.5 })
+        new THREE.MeshBasicMaterial({ color: Math.random() > 0.5 ? 0xff69b4 : 0x00ffff, transparent: true, opacity: 0.4 })
       );
-      p.position.set((Math.random() - 0.5) * 35, Math.random() * 15, (Math.random() - 0.5) * 35);
-      p.userData = { spd: 0.003 + Math.random() * 0.008, off: Math.random() * Math.PI * 2 };
+      p.position.set((Math.random() - 0.5) * 40, Math.random() * 18, (Math.random() - 0.5) * 20);
+      p.userData = { spd: 0.004 + Math.random() * 0.008, off: Math.random() * Math.PI * 2 };
       scene.add(p);
       particles.push(p);
     }
-
-    // Camera Controls
-    let isDragging = false;
-    let prevMouse = { x: 0, y: 0 };
-    let spherical = { theta: 0.6, phi: 1.1, radius: 18 };
-    let target = { theta: 0.6, phi: 1.1, radius: 18 };
-    let autoRotate = true;
-    let lastTouch = 0;
-
-    const ease = (current, target, factor) => current + (target - current) * factor;
-
-    const onDown = e => {
-      isDragging = true;
-      autoRotate = false;
-      const p = e.touches ? e.touches[0] : e;
-      prevMouse = { x: p.clientX, y: p.clientY };
-    };
-
-    const onMove = e => {
-      if (!isDragging) return;
-      const p = e.touches ? e.touches[0] : e;
-      const dx = p.clientX - prevMouse.x;
-      const dy = p.clientY - prevMouse.y;
-      target.theta -= dx * 0.004;
-      target.phi -= dy * 0.004;
-      target.phi = Math.max(0.4, Math.min(1.5, target.phi));
-      prevMouse = { x: p.clientX, y: p.clientY };
-    };
-
-    const onUp = () => {
-      isDragging = false;
-      lastTouch = performance.now();
-    };
-
-    const onWheel = e => {
-      e.preventDefault();
-      target.radius += e.deltaY * 0.012;
-      target.radius = Math.max(10, Math.min(30, target.radius));
-      autoRotate = false;
-      lastTouch = performance.now();
-    };
-
-    canvas.addEventListener('mousedown', onDown);
-    canvas.addEventListener('mousemove', onMove);
-    canvas.addEventListener('mouseup', onUp);
-    canvas.addEventListener('mouseleave', onUp);
-    canvas.addEventListener('touchstart', onDown, { passive: true });
-    canvas.addEventListener('touchmove', onMove, { passive: true });
-    canvas.addEventListener('touchend', onUp);
-    canvas.addEventListener('wheel', onWheel, { passive: false });
 
     // Animation
     let time = 0;
@@ -602,109 +689,122 @@
       requestAnimationFrame(animate);
       const delta = clock.getDelta();
       time += delta;
+      camState.animPhase += delta;
 
-      // Auto rotate after 4 seconds
-      if (!isDragging && performance.now() - lastTouch > 4000) autoRotate = true;
-      if (autoRotate) target.theta += delta * 0.15;
+      // Auto camera animation (zoom in/out, left/right sweep)
+      if (camState.autoAnimate) {
+        // Smooth zoom in and out
+        camState.targetZ = 14 + Math.sin(camState.animPhase * 0.15) * 4;
+        // Gentle left-right sweep
+        camState.targetX = Math.sin(camState.animPhase * 0.1) * 3;
+        // Subtle up-down
+        camState.targetY = 4 + Math.sin(camState.animPhase * 0.12) * 0.8;
+      }
 
       // Super smooth camera interpolation
-      spherical.theta = ease(spherical.theta, target.theta, 0.035);
-      spherical.phi = ease(spherical.phi, target.phi, 0.035);
-      spherical.radius = ease(spherical.radius, target.radius, 0.035);
+      camState.currentX += (camState.targetX - camState.currentX) * 0.025;
+      camState.currentY += (camState.targetY - camState.currentY) * 0.025;
+      camState.currentZ += (camState.targetZ - camState.currentZ) * 0.025;
 
-      camera.position.x = spherical.radius * Math.sin(spherical.phi) * Math.sin(spherical.theta);
-      camera.position.y = spherical.radius * Math.cos(spherical.phi);
-      camera.position.z = spherical.radius * Math.sin(spherical.phi) * Math.cos(spherical.theta);
-      camera.lookAt(0, 2.5, 0);
+      camera.position.x = camState.currentX;
+      camera.position.y = camState.currentY;
+      camera.position.z = camState.currentZ;
+      camera.lookAt(camState.currentX * 0.3, 2.5, 0);
 
-      // Shopkeeper animation
-      keeper.position.y = Math.sin(time * 1.5) * 0.03;
-      keeper.rotation.y = Math.sin(time * 0.8) * 0.15;
-      leftArm.rotation.z = 0.4 + Math.sin(time * 2) * 0.2;
-      rightArm.rotation.z = -0.4 - Math.sin(time * 2 + 1) * 0.2;
-      head.rotation.y = Math.sin(time * 0.6) * 0.2;
-      head.rotation.x = Math.sin(time * 0.4) * 0.05;
+      // Shopkeeper animations
+      keeper.position.y = 0.5 + Math.sin(time * 1.2) * 0.04;
+      keeper.rotation.y = Math.sin(time * 0.6) * 0.12;
+      leftArm.rotation.z = 0.5 + Math.sin(time * 1.8) * 0.25;
+      rightArm.rotation.z = -0.5 - Math.sin(time * 1.8 + 0.5) * 0.25;
+      head.rotation.y = Math.sin(time * 0.5) * 0.15;
+      head.rotation.x = Math.sin(time * 0.35) * 0.08;
 
-      // Cup bobbing animation
+      // Cup bobbing
       cups.forEach((cup, i) => {
-        cup.position.y = cup.userData.baseY + Math.sin(time * 1.8 + cup.userData.phase) * 0.025;
-        cup.rotation.y = Math.sin(time * 0.5 + i) * 0.1;
+        cup.position.y = cup.userData.baseY + Math.sin(time * 1.5 + cup.userData.phase) * 0.02;
+        cup.rotation.y = Math.sin(time * 0.4 + i) * 0.08;
       });
 
-      // Stool subtle movement
+      // Stool subtle animation
       stools.forEach((stool, i) => {
-        stool.rotation.y = Math.sin(time * 0.3 + i * 2) * 0.05;
+        stool.rotation.y = Math.sin(time * 0.25 + i * 1.5) * 0.04;
       });
 
-      // Billboard pulsing
-      billboards.forEach((bb, i) => {
-        const pulse = 0.7 + Math.sin(time * 2.5 + i * 0.9) * 0.25;
-        bb.face.material.emissiveIntensity = pulse;
-        bb.light.intensity = 1 + Math.sin(time * 2.5 + i * 0.9) * 0.4;
-      });
-
-      // Signpost signs wave
-      signs.forEach((s, i) => {
-        s.rotation.z = Math.sin(time * 1.2 + i * 0.5) * 0.08;
-      });
-
-      // Neon sign glow
-      signGlow.intensity = 3 + Math.sin(time * 3.5) * 0.8;
-      signBorderOuter.material.color.setHSL(0.45 + Math.sin(time * 0.5) * 0.05, 1, 0.55);
+      // Sign glow pulse
+      signGlow.intensity = 3 + Math.sin(time * 2.5) * 0.8;
 
       // Cup icon float
-      cupIconG.position.y = 5.8 + Math.sin(time * 1.2) * 0.08;
-      cupIconG.rotation.y = Math.sin(time * 0.8) * 0.2;
+      cupIcon.position.y = 6.5 + Math.sin(time * 1) * 0.1;
+      cupIcon.rotation.y = Math.sin(time * 0.6) * 0.15;
 
       // Steam animation
       steamParts.forEach(s => {
         s.position.y += s.userData.spd;
-        s.position.x = 3.5 + Math.sin(time * 3 + s.userData.off) * 0.12;
-        s.material.opacity = 0.7 - (s.position.y - s.userData.startY) * 0.5;
-        s.scale.setScalar(1 + (s.position.y - s.userData.startY) * 0.3);
-        if (s.position.y > 7) {
+        s.position.x = 4.2 + Math.sin(time * 2.5 + s.userData.off) * 0.15;
+        s.material.opacity = 0.6 - (s.position.y - s.userData.startY) * 0.35;
+        s.scale.setScalar(1 + (s.position.y - s.userData.startY) * 0.4);
+        if (s.position.y > 8.5) {
           s.position.y = s.userData.startY;
-          s.position.x = 3.5 + (Math.random() - 0.5) * 0.2;
+          s.position.x = 4.2 + (Math.random() - 0.5) * 0.25;
           s.scale.setScalar(1);
         }
       });
 
       // Lamp glow
       lamps.forEach((l, i) => {
-        l.light.intensity = 2 + Math.sin(time * 1.8 + i * 1.5) * 0.4;
-        l.bulb.material.color.setHSL(0.12, 0.3, 0.85 + Math.sin(time * 1.8 + i * 1.5) * 0.1);
+        l.light.intensity = 2.5 + Math.sin(time * 1.5 + i * 2) * 0.5;
+        const hue = 0.12 + Math.sin(time * 0.8 + i) * 0.02;
+        l.bulb.material.color.setHSL(hue, 0.4, 0.88);
       });
 
       // Floating particles
       particles.forEach(p => {
         p.position.y += p.userData.spd;
-        p.position.x += Math.sin(time * 0.5 + p.userData.off) * 0.003;
-        p.position.z += Math.cos(time * 0.5 + p.userData.off) * 0.003;
-        if (p.position.y > 16) {
+        p.position.x += Math.sin(time * 0.4 + p.userData.off) * 0.004;
+        if (p.position.y > 20) {
           p.position.y = -2;
-          p.position.x = (Math.random() - 0.5) * 35;
-          p.position.z = (Math.random() - 0.5) * 35;
+          p.position.x = (Math.random() - 0.5) * 40;
+          p.position.z = (Math.random() - 0.5) * 20;
         }
       });
 
-      // Ambient light color shift
-      pinkLight.intensity = 1.5 + Math.sin(time * 0.7) * 0.4;
-      cyanLight.intensity = 1.2 + Math.sin(time * 0.5 + 1.5) * 0.3;
-      warmLight.intensity = 2 + Math.sin(time * 1.2) * 0.3;
+      // Ambient light shifts
+      pinkLight.intensity = 1.5 + Math.sin(time * 0.6) * 0.4;
+      cyanLight.intensity = 1.2 + Math.sin(time * 0.5 + 1) * 0.3;
+      warmLight.intensity = 2.5 + Math.sin(time * 0.9) * 0.4;
 
-      // Espresso machine gauge
-      gaugeGlass.material.color.setHSL(0.3 + Math.sin(time * 2) * 0.1, 1, 0.5);
+      // Machine gauge
+      gauge.material.color.setHSL(0.3 + Math.sin(time * 1.5) * 0.1, 1, 0.5);
 
       renderer.render(scene, camera);
     };
 
     animate();
 
-    // Resize
+    // Resize handler
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Card hover effects with 3D parallax
+    const cards = document.querySelectorAll('.billboard-card');
+    cards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = (y - centerY) / 12;
+        const rotateY = (centerX - x) / 12;
+        card.style.transform = `scale(1.08) perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'scale(1) perspective(1000px) rotateX(0) rotateY(0)';
+      });
     });
   </script>
 </body>
